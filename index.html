@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MyLyricSong Studio</title>
+    
+    <meta name="description" content="Modern web platform for syncing lyrics. Generate standalone HTML audio players or JSON data instantly.">
+    <meta name="author" content="JASONPW & YCYLSTUDIO">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://mylyricsong.app/">
+    <meta name="theme-color" content="#020617">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://mylyricsong.app/">
+    <meta property="og:title" content="MyLyricSong Studio - Audio Lyric Sync">
+    <meta property="og:description" content="Audio Sync Engine for your songs. Generate standalone HTML files instantly.">
+    
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2310b981'><path d='M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z'/></svg>">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "MyLyricSong Studio",
+      "url": "https://mylyricsong.app/",
+      "description": "Audio Sync Engine generating standalone HTML and JSON.",
+      "applicationCategory": "MultimediaApplication",
+      "operatingSystem": "All",
+      "author": {
+        "@type": "Organization",
+        "name": "YCYLSTUDIO"
+      }
+    }
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome & JSZip -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Space Grotesk"', 'sans-serif'],
+                        inter: ['"Inter"', 'sans-serif'],
+                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
+                    },
+                    colors: {
+                        brand: { bg: '#020617', panel: 'rgba(15, 23, 42, 0.65)', border: 'rgba(255, 255, 255, 0.08)', green: '#10b981', blue: '#3b82f6' }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: #020617; 
+            background-image: 
+                radial-gradient(circle at 10% 10%, rgba(16, 185, 129, 0.12), transparent 40%),
+                radial-gradient(circle at 90% 90%, rgba(59, 130, 246, 0.12), transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(2, 6, 23, 1), #020617 100%);
+            background-attachment: fixed;
+            color: #f8fafc;
+            min-height: 100vh;
+        }
+        .glass {
+            background: var(--tw-colors-brand-panel);
+            backdrop-filter: blur(32px);
+            -webkit-backdrop-filter: blur(32px);
+            border: 1px solid var(--tw-colors-brand-border);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+        .glass-input {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .glass-input:focus {
+            border-color: var(--tw-colors-brand-green);
+            box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.4);
+            outline: none;
+            background: rgba(0, 0, 0, 0.6);
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+        
+        input[type="color"] {
+            -webkit-appearance: none; border: none; padding: 0;
+            width: 100%; height: 38px; border-radius: 8px; cursor: pointer;
+        }
+        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+        input[type="color"]::-webkit-color-swatch { border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; }
+
+        #toast {
+            visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center; border-radius: 8px;
+            padding: 16px; position: fixed; z-index: 50; left: 50%; bottom: 30px; transform: translateX(-50%);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5); font-size: 13px; opacity: 0; transition: opacity 0.5s, visibility 0.5s;
+        }
+        #toast.show { visibility: visible; opacity: 1; }
+    </style>
+</head>
+
+<body class="text-slate-300 pb-12 text-xs sm:text-sm">
+
+    <div id="toast">Message here</div>
+
+    <header class="w-full py-12 flex flex-col items-center justify-center relative z-10 border-b border-white/5 mb-8">
+        <div class="absolute inset-0 bg-gradient-to-r from-brand-green to-brand-blue blur-[120px] opacity-20 pointer-events-none"></div>
+        <h1 class="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tighter text-white uppercase text-center relative z-10 flex items-center gap-4">
+            <i class="fa-solid fa-music text-brand-green"></i>
+            <div>MYLYRIC<span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-green to-brand-blue">SONG</span></div>
+        </h1>
+    </header>
+
+    <main class="container mx-auto px-4 lg:px-8 max-w-[1400px]">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 relative z-10">
+            
+            <div class="lg:col-span-6 xl:col-span-5 flex flex-col gap-6">
+                <div class="glass rounded-3xl p-6 sm:p-8 relative overflow-hidden">
+                    <h2 class="text-base sm:text-lg font-bold mb-6 text-white flex items-center gap-2 border-b border-white/10 pb-4">
+                        <i class="fa-solid fa-sliders text-brand-green"></i> Track Configuration
+                    </h2>
+                    
+                    <form id="dataForm" class="flex flex-col gap-5" autocomplete="off">
+                        
+                        <div class="grid grid-cols-1 gap-4">
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-400 mb-1.5 uppercase tracking-wide">Song Title</label>
+                                <input type="text" id="inputTitle" autocomplete="off" placeholder="Type song title here..." class="w-full glass-input rounded-xl px-4 py-3 text-sm">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-400 mb-1.5 uppercase tracking-wide">Audio (MP3/WAV)</label>
+                                <div class="relative">
+                                    <input type="file" id="inputAudio" accept="audio/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                                    <div class="w-full glass-input rounded-xl px-3 py-2.5 flex items-center gap-2 truncate hover:border-brand-green/50 transition">
+                                        <div class="bg-white/10 px-2 py-1 rounded text-white font-medium text-[11px] flex-shrink-0"><i class="fa-solid fa-upload"></i> Upload</div>
+                                        <span id="audioName" class="truncate text-slate-400 text-xs">Choose Audio...</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-400 mb-1.5 uppercase tracking-wide">Cover Art (JPG/PNG)</label>
+                                <div class="relative">
+                                    <input type="file" id="inputCover" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                                    <div class="w-full glass-input rounded-xl px-3 py-2.5 flex items-center gap-2 truncate hover:border-brand-green/50 transition">
+                                        <div class="bg-white/10 px-2 py-1 rounded text-white font-medium text-[11px] flex-shrink-0"><i class="fa-solid fa-image"></i> Upload</div>
+                                        <span id="coverName" class="truncate text-slate-400 text-xs">Choose Cover...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-400 mb-1.5 uppercase tracking-wide flex justify-between">
+                                <span>Lyrics (LRC Format)</span>
+                            </label>
+                            <textarea id="inputLrc" rows="6" autocomplete="off" placeholder="Paste LRC lyrics here..." class="w-full glass-input rounded-2xl px-4 py-3 text-[12px] font-mono resize-none leading-relaxed"></textarea>
+                        </div>
+
+                        <div class="bg-black/30 border border-white/5 rounded-2xl p-4">
+                            <div class="flex justify-between items-center mb-3 border-b border-white/5 pb-2">
+                                <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wide">Credits</label>
+                                <button type="button" id="btnAddCredit" class="text-[10px] bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg transition border border-white/10">
+                                    <i class="fa-solid fa-plus"></i> Add
+                                </button>
+                            </div>
+                            <div id="creditsList" class="flex flex-col gap-2 max-h-40 overflow-y-auto pr-1">
+                                <div class="flex gap-2 items-center credit-item">
+                                    <input type="text" placeholder="Type role here..." autocomplete="off" class="cred-role w-1/3 glass-input rounded-lg px-3 py-2 text-xs">
+                                    <input type="text" placeholder="Type name here..." autocomplete="off" class="cred-name flex-1 glass-input rounded-lg px-3 py-2 text-xs">
+                                    <button type="button" class="btn-rm-credit w-8 h-8 bg-red-500/20 hover:bg-red-500/40 text-red-400 rounded-lg flex items-center justify-center transition"><i class="fa-solid fa-trash-can text-[10px]"></i></button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border border-white/10 bg-black/40 rounded-2xl p-4 shadow-inner mt-2">
+                            <h3 class="text-[11px] font-bold text-brand-blue uppercase tracking-wide mb-4 flex items-center gap-2"><i class="fa-solid fa-shield-halved"></i> Advanced Settings & SEO</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div class="sm:col-span-2">
+                                    <label class="block text-[10px] text-slate-500 mb-1 font-semibold uppercase">Author / Main Creator</label>
+                                    <input type="text" id="inputAuthor" autocomplete="off" placeholder="Type author name..." class="w-full glass-input rounded-lg px-3 py-2 text-xs">
+                                </div>
+                                <div class="sm:col-span-2">
+                                    <label class="block text-[10px] text-slate-500 mb-1 font-semibold uppercase">Meta Description</label>
+                                    <input type="text" id="inputDesc" autocomplete="off" placeholder="Type track description..." class="w-full glass-input rounded-lg px-3 py-2 text-xs">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-slate-500 mb-1 font-semibold uppercase">Dominant Theme Color</label>
+                                    <div class="flex gap-2 items-center">
+                                        <input type="color" id="inputColor" value="#000000" class="w-12 h-10 border-none bg-transparent">
+                                        <span class="text-xs text-slate-400">Theme Color</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-slate-500 mb-1 font-semibold uppercase">Distribution License</label>
+                                    <select id="inputLicense" class="w-full glass-input rounded-lg px-3 py-2.5 text-xs bg-black text-white focus:bg-gray-900 border-r-[12px] border-transparent">
+                                        <option value="" disabled selected>Select License...</option>
+                                        <option value="All Rights Reserved - Strictly No Unauthorized Use, Modification, or Commercial Exploitation">All Rights Reserved (Strict)</option>
+                                        <option value="Creative Commons Attribution 4.0 International (CC BY 4.0)">CC BY 4.0</option>
+                                        <option value="Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)">CC BY-NC 4.0</option>
+                                        <option value="Creative Commons Attribution-NoDerivatives 4.0 International (CC BY-ND 4.0)">CC BY-ND 4.0</option>
+                                        <option value="Public Domain / CC0">Public Domain / CC0</option>
+                                        <option value="Standard Music License">Standard Music License</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="lg:col-span-6 xl:col-span-7 flex flex-col gap-6 h-full">
+                <div class="glass rounded-2xl p-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <button id="btnPreview" class="bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold py-3 px-4 rounded-xl transition-all text-xs flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-arrows-rotate text-brand-blue"></i> Generate Preview
+                    </button>
+                    <button id="btnDownloadJson" class="bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold py-3 px-4 rounded-xl transition-all text-xs flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-code text-orange-400"></i> Download JSON
+                    </button>
+                    <button id="btnDownloadZip" class="bg-gradient-to-r from-brand-green to-brand-blue hover:opacity-90 text-white font-bold py-3 px-4 rounded-xl transition-all shadow-lg shadow-brand-green/20 text-xs flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-file-zipper"></i> Download ZIP
+                    </button>
+                </div>
+
+                <div class="glass rounded-3xl p-3 flex-1 flex flex-col relative min-h-[700px] shadow-2xl">
+                    <div class="px-4 py-3 flex justify-between items-center border-b border-white/10 mb-3 bg-black/20 rounded-t-xl">
+                        <span class="text-[10px] font-bold tracking-widest uppercase text-slate-400 flex items-center gap-2"><i class="fa-solid fa-mobile-screen"></i> Live Output Preview</span>
+                        <div class="flex gap-1.5">
+                            <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
+                        </div>
+                    </div>
+                    <div class="flex-1 w-full flex justify-center items-center bg-black/40 rounded-2xl overflow-hidden relative border border-white/5">
+                        <div id="iframePlaceholder" class="absolute inset-0 flex flex-col items-center justify-center text-slate-500 z-0">
+                            <i class="fa-solid fa-wand-magic-sparkles text-4xl mb-3 opacity-50"></i>
+                            <p class="text-xs uppercase tracking-widest font-semibold">Fill data and Generate</p>
+                        </div>
+                        <iframe id="previewIframe" class="w-full max-w-[400px] h-full max-h-[800px] bg-[#121212] border-none relative z-10 shadow-2xl rounded-[32px] sm:my-4 transition-opacity duration-500 opacity-0" allow="clipboard-write; share"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-16 border-t border-white/5 pt-8 pb-10 relative z-10 text-center px-4">
+        <div class="w-16 h-1 bg-gradient-to-r from-brand-green to-brand-blue rounded-full mx-auto mb-6 opacity-50"></div>
+        <p class="text-[11px] text-slate-400 font-bold tracking-[0.2em] uppercase">
+            Created by <span class="text-white">JASONPW</span> &amp; <span class="text-brand-green">YCYLSTUDIO</span>
+        </p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            const UI = {
+                title: document.getElementById('inputTitle'),
+                audio: document.getElementById('inputAudio'),
+                cover: document.getElementById('inputCover'),
+                audioName: document.getElementById('audioName'),
+                coverName: document.getElementById('coverName'),
+                lrc: document.getElementById('inputLrc'),
+                creditsList: document.getElementById('creditsList'),
+                btnAddCredit: document.getElementById('btnAddCredit'),
+                
+                author: document.getElementById('inputAuthor'),
+                desc: document.getElementById('inputDesc'),
+                themeColor: document.getElementById('inputColor'),
+                license: document.getElementById('inputLicense'),
+                
+                btnPreview: document.getElementById('btnPreview'),
+                btnZip: document.getElementById('btnDownloadZip'),
+                btnJson: document.getElementById('btnDownloadJson'),
+                iframe: document.getElementById('previewIframe'),
+                placeholder: document.getElementById('iframePlaceholder'),
+                toast: document.getElementById('toast')
+            };
+
+            let appState = {
+                title: "",
+                artist: "",
+                audioData: null, 
+                coverData: null, 
+                lyrics: "",
+                credits: [],
+                seo: {}
+            };
+
+            function showToast(message) {
+                UI.toast.textContent = message;
+                UI.toast.className = "show";
+                setTimeout(() => { UI.toast.className = UI.toast.className.replace("show", ""); }, 3000);
+            }
+
+            const getFileExt = (filename) => filename.split('.').pop().toLowerCase();
+            const getBase64 = (file) => new Promise((resolve, reject) => {
+                if(!file) return resolve(null);
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => {
+                    const fullBase64 = reader.result;
+                    const rawBase64 = fullBase64.split(',')[1];
+                    resolve({ ext: getFileExt(file.name), base64: fullBase64, rawBase64: rawBase64 });
+                };
+                reader.onerror = e => reject(e);
+            });
+
+            UI.audio.addEventListener('change', e => {
+                const file = e.target.files[0];
+                UI.audioName.textContent = file ? file.name : "Choose Audio...";
+                if(file) UI.audioName.classList.add('text-brand-green');
+            });
+            UI.cover.addEventListener('change', e => {
+                const file = e.target.files[0];
+                UI.coverName.textContent = file ? file.name : "Choose Cover...";
+                if(file) UI.coverName.classList.add('text-brand-green');
+            });
+
+            UI.btnAddCredit.addEventListener('click', () => {
+                const div = document.createElement('div');
+                div.className = 'flex gap-2 items-center credit-item mt-2';
+                div.innerHTML = `
+                    <input type="text" placeholder="Type role here..." autocomplete="off" class="cred-role w-1/3 glass-input rounded-lg px-3 py-2 text-xs">
+                    <input type="text" placeholder="Type name here..." autocomplete="off" class="cred-name flex-1 glass-input rounded-lg px-3 py-2 text-xs">
+                    <button type="button" class="btn-rm-credit w-8 h-8 bg-red-500/20 hover:bg-red-500/40 text-red-400 rounded-lg flex items-center justify-center transition"><i class="fa-solid fa-trash-can text-[10px]"></i></button>
+                `;
+                div.querySelector('.btn-rm-credit').onclick = () => div.remove();
+                UI.creditsList.appendChild(div);
+            });
+            
+            document.querySelectorAll('.btn-rm-credit').forEach(btn => {
+                btn.onclick = (e) => e.currentTarget.parentElement.remove();
+            });
+
+            async function gatherState() {
+                appState.title = UI.title.value.trim() || 'Untitled Track';
+                appState.lyrics = UI.lrc.value.trim();
+                
+                appState.seo = {
+                    author: UI.author.value.trim(),
+                    desc: UI.desc.value.trim(),
+                    themeColor: UI.themeColor.value || '#121212',
+                    license: UI.license.value || 'All Rights Reserved'
+                };
+
+                appState.credits = [];
+                let detectedArtist = "";
+
+                document.querySelectorAll('.credit-item').forEach(item => {
+                    const role = item.querySelector('.cred-role').value.trim();
+                    const name = item.querySelector('.cred-name').value.trim();
+                    if(role || name) {
+                        appState.credits.push({ role: role || 'Contributor', name: name || 'Unknown' });
+                        const rLower = role.toLowerCase();
+                        if(rLower === 'artist' || rLower === 'vocal' || rLower === 'singer' || rLower === 'main artist') {
+                            if(!detectedArtist) detectedArtist = name;
+                        }
+                    }
+                });
+
+                appState.artist = detectedArtist || appState.seo.author || 'Unknown Artist';
+
+                if(UI.audio.files[0]) appState.audioData = await getBase64(UI.audio.files[0]);
+                if(UI.cover.files[0]) appState.coverData = await getBase64(UI.cover.files[0]);
+            }
+
+            function generatePlayerHTML(mode = 'preview') {
+                const audioSrc = mode === 'zip' && appState.audioData 
+                    ? `./source/audio.${appState.audioData.ext}` 
+                    : (appState.audioData?.base64 || '');
+                    
+                const coverSrc = mode === 'zip' && appState.coverData 
+                    ? `./source/cover.${appState.coverData.ext}` 
+                    : (appState.coverData?.base64 || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400"><rect width="400" height="400" fill="%23282828"/><text x="50%" y="50%" font-family="sans-serif" font-size="24" fill="%23b3b3b3" text-anchor="middle" dy=".3em">No Cover</text></svg>');
+
+                const safeTitle = appState.title.replace(/"/g, '&quot;');
+                const safeArtist = appState.artist.replace(/"/g, '&quot;');
+                const safeDesc = appState.seo.desc ? appState.seo.desc.replace(/"/g, '&quot;') : `Listen to ${safeTitle} by ${safeArtist}`;
+                
+                const currentDate = new Date().toISOString().split('T')[0];
+
+                return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>${safeTitle} - ${safeArtist}</title>
+    
+    <meta name="description" content="${safeDesc}">
+    <meta name="author" content="${safeArtist}">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="${appState.seo.themeColor}">
+    <meta name="copyright" content="${appState.seo.license}">
+    
+    <meta property="og:title" content="${safeTitle} - ${safeArtist}">
+    <meta property="og:description" content="${safeDesc}">
+    <meta property="og:type" content="music.song">
+    <meta property="og:image" content="${coverSrc}">
+    
+    <link rel="icon" type="image/png" href="${coverSrc}">
+    <link rel="apple-touch-icon" href="${coverSrc}">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "MusicRecording",
+      "name": "${safeTitle}",
+      "byArtist": { "@type": "MusicGroup", "name": "${safeArtist}" },
+      "description": "${safeDesc}",
+      "datePublished": "${currentDate}",
+      "image": "${coverSrc}",
+      "copyrightNotice": "${appState.seo.license}"
+    }
+    <\/script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap');
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            background-color: #121212; color: #fff; 
+            overflow-x: hidden; overflow-y: auto; scroll-behavior: smooth;
+        }
+
+        .player-container {
+            position: relative; width: 100%; height: 100vh; min-height: 650px;
+            display: flex; flex-direction: column;
+            background: linear-gradient(180deg, ${appState.seo.themeColor}33 0%, #121212 100%);
+            z-index: 10;
+        }
+
+        .bg-blur {
+            position: absolute; inset: 0;
+            background-image: url('${coverSrc}'); background-size: cover; background-position: center;
+            filter: blur(60px) brightness(0.25); z-index: 0; transform: scale(1.1);
+        }
+
+        .header {
+            position: relative; z-index: 10; display: flex; justify-content: space-between; align-items: center;
+            padding: 24px 20px; font-size: 10px; font-weight: 700; letter-spacing: 2px; color: #fff;
+        }
+        .header i { font-size: 18px; cursor: pointer; color: #fff; opacity: 0.7; transition: opacity 0.2s;}
+        .header i:hover { opacity: 1; }
+
+        .cover-area {
+            position: relative; z-index: 10; flex: 1; display: flex; align-items: center; justify-content: center;
+            padding: 0 10%; margin-bottom: 20px;
+        }
+        .cover-area img {
+            width: 100%; max-width: 340px; aspect-ratio: 1/1; object-fit: cover;
+            border-radius: 8px; box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+        }
+
+        .controls-area { position: relative; z-index: 10; padding: 0 24px 40px 24px; }
+        
+        .track-info { margin-bottom: 20px; }
+        .title { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+        .artist { font-size: 16px; color: #b3b3b3; font-weight: 500; }
+
+        /* Custom Dual-Color Progress Bar */
+        .progress-wrapper {
+            display: flex; align-items: center; gap: 10px; margin-bottom: 24px; width: 100%;
+        }
+        .time-text { font-size: 12px; color: #a0a0a0; font-variant-numeric: tabular-nums; min-width: 35px; }
+        .time-text.left { text-align: left; }
+        .time-text.right { text-align: right; }
+        
+        input[type=range] {
+            -webkit-appearance: none; flex: 1; background: rgba(255,255,255,0.3); 
+            height: 4px; border-radius: 2px; cursor: pointer; margin: 0;
+            transition: background 0.1s linear;
+        }
+        input[type=range]::-webkit-slider-runnable-track { 
+            width: 100%; height: 4px; background: transparent; border-radius: 2px; 
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none; height: 12px; width: 12px; border-radius: 50%;
+            background: #fff; margin-top: -4px; box-shadow: 0 2px 4px rgba(0,0,0,0.5); transition: transform 0.1s;
+        }
+        input[type=range]:hover::-webkit-slider-thumb { transform: scale(1.2); }
+
+        .btn-group { display: flex; justify-content: center; align-items: center; gap: 32px; }
+        .btn-icon { background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; opacity: 0.8; transition: transform 0.1s; }
+        .btn-icon:hover { opacity: 1; }
+        .btn-icon:active { transform: scale(0.9); }
+        .btn-play {
+            width: 64px; height: 64px; border-radius: 50%; border: none; background: #fff; color: #000;
+            font-size: 24px; display: flex; justify-content: center; align-items: center; cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3); transition: transform 0.1s;
+        }
+        .btn-play:active { transform: scale(0.95); }
+
+        .content-area {
+            position: relative; z-index: 5; background: #121212; padding: 40px 20px 80px 20px;
+            min-height: 50vh; border-radius: 24px 24px 0 0; margin-top: -20px;
+        }
+        
+        .section-label { font-size: 16px; font-weight: 700; margin-bottom: 20px; color: #fff;}
+
+        /* Lyrics Box */
+        .lyrics-box {
+            background: #181818; border-radius: 16px; padding: 30px 20px;
+            margin-bottom: 40px; height: 400px; overflow-y: auto; scroll-behavior: smooth;
+        }
+        .lyric-line {
+            font-size: 20px; font-weight: 700; color: rgba(255,255,255,0.3);
+            margin-bottom: 24px; transition: all 0.3s ease; line-height: 1.4;
+            pointer-events: none; /* User cannot click */
+        }
+        .lyric-line.active { color: #fff; font-size: 24px; }
+        
+        .lyrics-box::-webkit-scrollbar { width: 6px; }
+        .lyrics-box::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+
+        .credits-box { background: #181818; border-radius: 16px; padding: 24px; }
+        .c-row { display: flex; justify-content: space-between; margin-bottom: 16px; font-size: 14px;}
+        .c-row:last-child { margin-bottom: 0;}
+        .c-role { color: #b3b3b3; font-size: 14px;}
+        .c-name { color: #fff; font-weight: 600; text-align: right; }
+
+        #msgToast {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            background: #fff; color: #000; padding: 12px 24px; border-radius: 30px;
+            font-size: 13px; font-weight: 600; opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 100;
+        }
+        
+        .footer-note {
+            text-align: center; margin-top: 40px; opacity: 0.6; font-size: 11px; font-weight: bold; letter-spacing: 1px;
+        }
+        .footer-note a { color: #ffffff; text-decoration: none; }
+        .footer-note a:hover { opacity: 0.8; }
+    </style>
+</head>
+<body>
+
+    <div id="msgToast">Message</div>
+
+    <div class="player-container">
+        <div class="bg-blur"></div>
+        
+        <div class="header">
+            <i class="fa-solid fa-chevron-down" onclick="window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'})" title="Scroll down"></i>
+            <span>NOW PLAYING</span>
+            <i class="fa-solid fa-share-nodes" id="btnShare" title="Share"></i>
+        </div>
+
+        <div class="cover-area">
+            <img src="${coverSrc}" alt="Cover Image">
+        </div>
+
+        <div class="controls-area">
+            <div class="track-info">
+                <div class="title">${safeTitle}</div>
+                <div class="artist">${safeArtist}</div>
+            </div>
+
+            <div class="progress-wrapper">
+                <span id="currentTime" class="time-text left">0:00</span>
+                <input type="range" id="seekSlider" value="0" step="0.1" min="0" max="100">
+                <span id="durationTime" class="time-text right">0:00</span>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn-icon" id="btnSkipBack" title="Skip -5s"><i class="fa-solid fa-backward-step"></i></button>
+                <button class="btn-play" id="btnPlay"><i class="fa-solid fa-play" style="margin-left:4px;"></i></button>
+                <button class="btn-icon" id="btnSkipFwd" title="Skip +5s"><i class="fa-solid fa-forward-step"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scrollable Detail Area -->
+    <div class="content-area">
+        <div class="section-label">Lyrics</div>
+        <div class="lyrics-box" id="lyricContainer">
+            <!-- Rendered by JS -->
+        </div>
+
+        <div class="section-label mt-8">Credits</div>
+        <div class="credits-box">
+            ${appState.credits.length > 0 ? appState.credits.map(c => `
+                <div class="c-row">
+                    <span class="c-role">${c.role}</span>
+                    <span class="c-name">${c.name}</span>
+                </div>
+            `).join('') : '<div class="c-row"><span class="c-role">Artist</span><span class="c-name">${safeArtist}</span></div>'}
+            
+            <div class="c-row" style="margin-top: 24px; padding-top:16px; border-top: 1px solid rgba(255,255,255,0.1);">
+                <span class="c-role">License</span>
+                <span class="c-name" style="font-size:12px; max-width: 60%; color:#a0a0a0; font-weight:normal;">${appState.seo.license}</span>
+            </div>
+        </div>
+        
+        <div class="footer-note">
+            POWERED BY <a href="https://jproject-1.github.io/mylyricsong" target="_blank">MYLYRICSONG ENGINE</a>
+        </div>
+    </div>
+
+    <audio id="audioEl" src="${audioSrc}"></audio>
+
+    <script>
+        const rawLrc = \`${appState.lyrics.replace(/`/g, '\\`')}\`;
+        const audio = document.getElementById('audioEl');
+        const slider = document.getElementById('seekSlider');
+        const currTimeEl = document.getElementById('currentTime');
+        const durTimeEl = document.getElementById('durationTime');
+        const btnPlay = document.getElementById('btnPlay');
+        const lyricContainer = document.getElementById('lyricContainer');
+        const toast = document.getElementById('msgToast');
+
+        function showMsg(str) {
+            toast.textContent = str;
+            toast.style.opacity = '1';
+            setTimeout(() => toast.style.opacity = '0', 2500);
+        }
+
+        function parseLrc(text) {
+            if(!text.trim()) return [];
+            const lines = text.split('\\n');
+            const result = [];
+            const regex = /\\[(\\d{2}):(\\d{2}(?:\\.\\d{1,3})?)\\](.*)/;
+            lines.forEach(line => {
+                const match = regex.exec(line.trim());
+                if (match) {
+                    const time = (parseInt(match[1], 10) * 60) + parseFloat(match[2]);
+                    result.push({ time, text: match[3].trim() || '♪' });
+                }
+            });
+            return result.sort((a, b) => a.time - b.time);
+        }
+
+        const lyricsData = parseLrc(rawLrc);
+        
+        if(lyricsData.length > 0) {
+            lyricContainer.innerHTML = lyricsData.map((l, i) => 
+                \`<div class="lyric-line" id="l-line-\${i}">\${l.text}</div>\`
+            ).join('');
+        } else {
+            lyricContainer.innerHTML = '<div class="lyric-line">No lyrics available.</div>';
+        }
+
+        const formatTime = (sec) => {
+            if(isNaN(sec)) return "0:00";
+            const m = Math.floor(sec / 60);
+            const s = Math.floor(sec % 60);
+            return \`\${m}:\${s < 10 ? '0' : ''}\${s}\`;
+        };
+
+        const updateSliderGradient = (value, max) => {
+            const percentage = (max > 0) ? (value / max) * 100 : 0;
+            slider.style.background = \`linear-gradient(to right, #ffffff \${percentage}%, rgba(255,255,255,0.3) \${percentage}%)\`;
+        };
+
+        const initAudioDuration = () => {
+            if(audio.duration && !isNaN(audio.duration) && audio.duration !== Infinity) {
+                slider.max = audio.duration;
+                durTimeEl.textContent = formatTime(audio.duration);
+                updateSliderGradient(audio.currentTime, audio.duration);
+            }
+        };
+
+        audio.addEventListener('loadedmetadata', initAudioDuration);
+        audio.addEventListener('durationchange', initAudioDuration);
+        
+        // Fallback for when metadata is already loaded (e.g., cached base64 audio)
+        if (audio.readyState >= 1) {
+            initAudioDuration();
+        }
+
+        let activeLyricIndex = -1;
+
+        audio.addEventListener('timeupdate', () => {
+            if(!slider.matches(':active')) {
+                slider.value = audio.currentTime;
+                updateSliderGradient(audio.currentTime, audio.duration);
+            }
+            currTimeEl.textContent = formatTime(audio.currentTime);
+            
+            if(lyricsData.length === 0) return;
+            
+            let newActiveIndex = -1;
+            for(let i = 0; i < lyricsData.length; i++){
+                if(audio.currentTime >= lyricsData[i].time) {
+                    newActiveIndex = i;
+                } else break;
+            }
+            
+            if(newActiveIndex !== activeLyricIndex) {
+                if(activeLyricIndex !== -1) {
+                    const oldEl = document.getElementById('l-line-' + activeLyricIndex);
+                    if(oldEl) oldEl.classList.remove('active');
+                }
+                
+                activeLyricIndex = newActiveIndex;
+                if(activeLyricIndex !== -1) {
+                    const newEl = document.getElementById('l-line-' + activeLyricIndex);
+                    if(newEl) {
+                        newEl.classList.add('active');
+                        const containerHeight = lyricContainer.clientHeight;
+                        const lineOffsetTop = newEl.offsetTop;
+                        const lineHeight = newEl.clientHeight;
+                        lyricContainer.scrollTop = lineOffsetTop - (containerHeight / 2) + (lineHeight / 2);
+                    }
+                }
+            }
+        });
+
+        slider.addEventListener('input', (e) => { 
+            audio.currentTime = e.target.value; 
+            updateSliderGradient(e.target.value, audio.duration);
+        });
+
+        btnPlay.addEventListener('click', () => {
+            if(!audio.src) { showMsg("Audio source missing"); return; }
+            if(audio.paused) {
+                audio.play().catch(e => showMsg("Cannot play audio"));
+                btnPlay.innerHTML = '<i class="fa-solid fa-pause"></i>';
+            } else {
+                audio.pause();
+                btnPlay.innerHTML = '<i class="fa-solid fa-play" style="margin-left:4px;"></i>';
+            }
+        });
+
+        audio.addEventListener('ended', () => {
+            btnPlay.innerHTML = '<i class="fa-solid fa-play" style="margin-left:4px;"></i>';
+            slider.value = 0;
+            updateSliderGradient(0, audio.duration);
+            if(activeLyricIndex !== -1) {
+                document.getElementById('l-line-' + activeLyricIndex)?.classList.remove('active');
+            }
+            activeLyricIndex = -1;
+            lyricContainer.scrollTop = 0;
+        });
+
+        document.getElementById('btnSkipBack').addEventListener('click', () => audio.currentTime = Math.max(0, audio.currentTime - 5));
+        document.getElementById('btnSkipFwd').addEventListener('click', () => audio.currentTime = Math.min(audio.duration, audio.currentTime + 5));
+
+        document.getElementById('btnShare').addEventListener('click', async () => {
+            const shareData = {
+                title: '${safeTitle} - ${safeArtist}',
+                text: 'Listen to ${safeTitle} by ${safeArtist}',
+                url: window.location.href
+            };
+            try {
+                if(navigator.share) {
+                    await navigator.share(shareData);
+                } else {
+                    navigator.clipboard.writeText(window.location.href);
+                    showMsg("Link copied to clipboard!");
+                }
+            } catch (err) { console.log('Share error', err); }
+        });
+    <\/script>
+</body>
+</html>`;
+            }
+
+            UI.btnPreview.addEventListener('click', async () => {
+                if(!UI.audio.files[0]) {
+                    showToast("Please upload an audio file first!");
+                    return;
+                }
+                
+                const btn = UI.btnPreview;
+                const ogHTML = btn.innerHTML;
+                btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Processing...';
+                btn.disabled = true;
+
+                try {
+                    await gatherState();
+                    const htmlString = generatePlayerHTML('preview');
+                    
+                    UI.placeholder.style.display = 'none';
+                    UI.iframe.srcdoc = htmlString;
+                    UI.iframe.style.opacity = '1';
+                    
+                    showToast("Preview generated successfully!");
+                } catch(e) {
+                    console.error(e);
+                    showToast("Error generating preview.");
+                } finally {
+                    btn.innerHTML = ogHTML;
+                    btn.disabled = false;
+                }
+            });
+
+            UI.btnJson.addEventListener('click', async () => {
+                if(!UI.title.value) { showToast("Song title is required!"); return; }
+                await gatherState();
+                
+                const jsonStr = JSON.stringify(appState, null, 2);
+                const blob = new Blob([jsonStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                const safeName = appState.title.replace(/[^a-z0-9]/gi, '_');
+                a.download = `${safeName}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                showToast("JSON downloaded successfully!");
+            });
+
+            UI.btnZip.addEventListener('click', async () => {
+                if(!UI.audio.files[0]) {
+                    showToast("Audio file is required to export ZIP!");
+                    return;
+                }
+
+                const btn = UI.btnZip;
+                const ogHTML = btn.innerHTML;
+                btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Zipping...';
+                btn.disabled = true;
+
+                try {
+                    await gatherState();
+                    
+                    const zip = new JSZip();
+                    const sourceFolder = zip.folder("source");
+
+                    if(appState.audioData) {
+                        sourceFolder.file(`audio.${appState.audioData.ext}`, appState.audioData.rawBase64, {base64: true});
+                    }
+                    
+                    if(appState.coverData) {
+                        sourceFolder.file(`cover.${appState.coverData.ext}`, appState.coverData.rawBase64, {base64: true});
+                    }
+
+                    const htmlContent = generatePlayerHTML('zip');
+                    zip.file("index.html", htmlContent);
+
+                    const content = await zip.generateAsync({type:"blob"});
+                    const url = URL.createObjectURL(content);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    const safeName = appState.title.replace(/[^a-z0-9]/gi, '_') || "MyLyricSong";
+                    a.download = `${safeName}.zip`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    
+                    showToast("ZIP downloaded successfully!");
+
+                } catch (error) {
+                    console.error(error);
+                    showToast("Failed to create ZIP.");
+                } finally {
+                    btn.innerHTML = ogHTML;
+                    btn.disabled = false;
+                }
+            });
+
+        });
+    </script>
+</body>
+</html>
