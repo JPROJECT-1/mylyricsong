@@ -1,45 +1,67 @@
-# MyLyricSong
+# 🎵 MyLyricSong
 
-**A modern web-based lyric player and lyric page generator inspired by modern music streaming interfaces.**
+**A modern, browser-based lyric player and standalone music-page generator.**
 
-MyLyricSong is a lightweight, browser-based tool for creating beautiful standalone music pages with **synchronized lyrics, audio playback, cover artwork, credits, metadata, and sharing support**.
+MyLyricSong is a lightweight web application for creating beautiful standalone music pages with:
 
-It is designed with a visual experience inspired by modern music platforms such as Spotify, while remaining an independent project with its own implementation, branding, and codebase.
+- 🎵 Audio playback
+- 📝 Synchronized LRC lyrics
+- 🖼️ Cover artwork
+- 👤 Artist and contributor credits
+- 🎨 Custom theme colors
+- 🔍 SEO metadata
+- 📱 Responsive music-player UI
+- 📦 JSON project export
+- 🗜️ Standalone ZIP export
+- 🔗 Web Share support
 
-🌐 **Live Demo:** https://jproject-1.github.io/mylyricsong/
+It is designed around a modern music-streaming experience while remaining an **independent project with its own implementation, branding, and codebase**.
+
+> **No backend is required.**  
+> Your files are processed directly in the browser.
+
+🌐 **Live Demo:**  
+https://jproject-1.github.io/mylyricsong/
 
 ---
 
-## ✨ Features
+# ✨ Features
 
-### 🎵 Audio Player
+## 🎵 Audio Player
 
-MyLyricSong allows you to create a complete standalone audio player from your browser.
+MyLyricSong generates a complete standalone HTML music player directly in your browser.
 
-Supported audio files include common browser-compatible formats such as:
+Supported formats depend on the browser, including common formats such as:
 
-* MP3
-* WAV
-* Other browser-supported audio formats
+- MP3
+- WAV
+- Other browser-supported audio formats
 
 The generated player includes:
 
-* Play / pause
-* Current playback time
-* Total duration
-* Seek bar
-* Skip backward 5 seconds
-* Skip forward 5 seconds
-* Automatic reset when playback ends
-* Responsive mobile-friendly controls
+- ▶️ Play / pause
+- ⏱️ Current playback time
+- ⏱️ Total duration
+- 🎚️ Seek bar
+- ⏪ Skip backward 5 seconds
+- ⏩ Skip forward 5 seconds
+- 🔄 Automatic player reset when playback ends
+- 📱 Responsive mobile-friendly controls
 
-The audio file can be embedded directly into the generated preview or packaged into the exported ZIP project.
+When exporting a ZIP package, the original audio file is placed inside the generated `source/` directory.
+
+Example:
+
+```text
+source/
+└── audio.mp3
+```
 
 ---
 
-### 📝 Synchronized Lyrics
+# 📝 Synchronized Lyrics
 
-MyLyricSong supports lyrics written in the **LRC format**.
+MyLyricSong supports timestamp-based **LRC lyrics**.
 
 Example:
 
@@ -52,49 +74,52 @@ Example:
 The generated player automatically:
 
 1. Parses the LRC timestamps.
-2. Detects the currently playing lyric.
-3. Highlights the active lyric.
-4. Automatically scrolls the lyrics container.
-5. Keeps the lyrics synchronized with the audio.
+2. Sorts lyrics by timestamp.
+3. Detects the currently playing lyric.
+4. Highlights the active lyric.
+5. Automatically scrolls the lyric container.
+6. Synchronizes lyrics with audio playback.
 
-The active lyric becomes visually emphasized while inactive lyrics remain subdued.
-
----
-
-### 🖼️ Cover Artwork
-
-You can upload cover artwork for your song.
-
-Supported image formats depend on browser support, including common formats such as:
-
-* JPG
-* PNG
-* WebP
-* Other browser-supported image formats
-
-The cover artwork is used in multiple places:
-
-* Music player
-* Background blur effect
-* Open Graph metadata
-* Browser icon
-* Apple touch icon
-* Generated music metadata
-
-The player also creates a blurred version of the cover artwork as part of its visual background.
+The currently active lyric is displayed more prominently while inactive lines remain visually subdued.
 
 ---
 
-### 👤 Credits
+# 🖼️ Cover Artwork
+
+You can upload a cover image for your song.
+
+Common browser-supported formats include:
+
+- JPG / JPEG
+- PNG
+- WebP
+- Other browser-supported image formats
+
+The cover artwork can be used as:
+
+- 🎨 Main player artwork
+- 🌫️ Blurred background
+- 🌐 Open Graph image
+- 🌐 Browser icon
+- 🍎 Apple touch icon
+- 🎵 Generated music metadata
+
+If no artwork is provided, MyLyricSong uses a default placeholder.
+
+---
+
+# 👤 Credits
 
 Add multiple contributors to your music project.
 
 Each credit contains:
 
-* Role
-* Name
+```text
+Role
+Name
+```
 
-For example:
+Example:
 
 ```text
 Artist       John Doe
@@ -103,22 +128,20 @@ Composer     Alex Smith
 Lyricist     Example Person
 ```
 
-MyLyricSong can also automatically detect the main artist from roles such as:
+MyLyricSong can automatically detect the main artist from common roles such as:
 
-* Artist
-* Vocal
-* Singer
-* Main Artist
+- Artist
+- Vocal
+- Singer
+- Main Artist
 
-If no artist is detected, the author field can be used as a fallback.
+If no artist role is detected, the **Author / Main Creator** field can be used as a fallback.
 
 ---
 
-### 🎨 Custom Theme Color
+# 🎨 Custom Theme Color
 
-You can select a dominant theme color for your generated music page.
-
-The selected color is used to influence the player interface and background atmosphere.
+Choose a dominant theme color for the generated music page.
 
 Example:
 
@@ -126,68 +149,81 @@ Example:
 Theme Color: #10B981
 ```
 
-This makes it possible to create different visual identities for different songs.
+The selected color influences the generated player background and overall visual atmosphere.
+
+This allows different songs to have different visual identities.
 
 ---
 
-### 🔍 SEO Metadata
+# 🔍 SEO & Metadata
 
-MyLyricSong includes optional metadata configuration for generated pages.
+MyLyricSong provides optional metadata configuration for generated music pages.
 
-You can specify:
+Available settings include:
 
-* Author / Main Creator
-* Meta Description
-* Theme Color
-* Distribution License
+- Author / Main Creator
+- Meta Description
+- Dominant Theme Color
+- Distribution License
 
-The generated HTML includes metadata such as:
+Generated pages can contain metadata such as:
 
-* `<title>`
-* Meta description
-* Author
-* Robots directive
-* Theme color
-* Copyright information
-* Open Graph metadata
-* Schema.org structured data
+```html
+<title>
+<meta name="description">
+<meta name="author">
+<meta name="robots">
+<meta name="theme-color">
+<meta name="copyright">
+```
 
-Generated pages use the `MusicRecording` Schema.org type.
+Open Graph metadata is also generated for supported sharing platforms.
 
-This can help search engines better understand the generated music page.
+The generated player additionally includes Schema.org structured data using:
+
+```text
+MusicRecording
+```
+
+This helps search engines better understand the content of the generated music page.
+
+> SEO metadata does not guarantee search-engine indexing or ranking.
 
 ---
 
-### 👀 Live Preview
+# 👀 Live Preview
 
-You can preview your generated music player directly inside MyLyricSong.
+MyLyricSong includes a built-in live preview system.
 
-Click:
+After entering your information, click:
 
 **Generate Preview**
 
-The application generates the player HTML and displays it inside an embedded preview window.
+The application generates the standalone player and displays it inside the preview area.
 
-This allows you to verify:
+You can check:
 
-* Cover artwork
-* Song title
-* Artist
-* Audio controls
-* Lyrics synchronization
-* Credits
-* Theme
-* Overall layout
+- Cover artwork
+- Song title
+- Artist
+- Audio playback
+- Progress bar
+- Lyrics synchronization
+- Credits
+- Theme color
+- Overall layout
 
-before exporting your project.
+before exporting the project.
+
+The preview is generated locally using an embedded HTML document.
 
 ---
 
-### 📦 JSON Export
+# 📦 JSON Export
 
-MyLyricSong can export your project information as a JSON file.
+MyLyricSong can export your current project data as a JSON file.
 
-The exported data can contain:
+Example:
 
 ```json
 {
@@ -201,21 +237,24 @@ The exported data can contain:
 }
 ```
 
-This can be useful for:
+JSON export can be useful for:
 
-* Backups
-* Data storage
-* Custom integrations
-* Future development
-* Reusing song information
+- 💾 Backups
+- 🗃️ Data storage
+- 🔧 Custom integrations
+- 🧪 Development
+- ♻️ Reusing project information
+- 📦 Creating your own workflow around MyLyricSong
+
+The JSON file is intended as **project data**, not as the final standalone music page.
 
 ---
 
-### 🗜️ ZIP Export
+# 🗜️ ZIP Export
 
-MyLyricSong can generate a complete standalone ZIP package.
+MyLyricSong can generate a complete standalone website package.
 
-The exported project follows a structure similar to:
+Example:
 
 ```text
 Example_Song.zip
@@ -227,26 +266,27 @@ Example_Song.zip
     └── cover.jpg
 ```
 
-The generated `index.html` references the local files inside the `source` directory.
+The generated `index.html` references the local files inside the `source/` directory.
 
-This makes the exported player suitable for:
+The resulting project can be used with compatible static hosting services.
 
-* Static hosting
-* Personal websites
-* GitHub Pages
-* Local playback
-* Web projects
-* Sharing as a standalone music page
+Examples:
 
-No server-side backend is required for the generated player.
+- GitHub Pages
+- Netlify
+- Cloudflare Pages
+- Vercel
+- Other static hosting providers
+
+No PHP, Node.js, database, or server-side backend is required for the generated player.
 
 ---
 
-## 🎧 Generated Player
+# 🎧 Generated Player
 
-The generated music page is designed as a standalone experience.
+The generated page provides a standalone music experience.
 
-It contains:
+Its interface contains:
 
 ```text
 ┌──────────────────────────────┐
@@ -254,12 +294,12 @@ It contains:
 │                              │
 │        Album Artwork         │
 │                              │
-│     Song Title               │
-│     Artist                  │
+│        Song Title            │
+│        Artist                │
 │                              │
 │  0:00 ─────────────── 3:45   │
 │                              │
-│     ◀     ▶     ▶            │
+│       ◀     ▶     ▶          │
 └──────────────────────────────┘
 
 Lyrics
@@ -280,23 +320,27 @@ Producer            Example Producer
 License             ...
 ```
 
-The generated interface is responsive and designed primarily around a modern mobile music-player experience.
+The generated player is designed primarily around a modern mobile music-player experience while remaining responsive on larger screens.
 
 ---
 
-## 🛠️ How to Use
+# 🚀 Quick Start
 
-### 1. Open MyLyricSong
+## 1. Open MyLyricSong
 
-Visit:
+You can use the live version directly in your browser:
+
+**Live Demo**
 
 https://jproject-1.github.io/mylyricsong/
 
+No installation is required.
+
 ---
 
-### 2. Enter Song Information
+## 2. Enter Your Song Title
 
-Enter the song title.
+Enter the title of your song.
 
 Example:
 
@@ -307,7 +351,7 @@ My Example Song
 
 ---
 
-### 3. Upload Audio
+## 3. Upload Audio
 
 Upload your audio file.
 
@@ -317,11 +361,16 @@ Example:
 my-song.mp3
 ```
 
-Audio is required to generate the preview and ZIP package.
+An audio file is required for:
+
+- Preview generation
+- ZIP export
+
+The browser must support the selected audio format.
 
 ---
 
-### 4. Upload Cover Artwork
+## 4. Upload Cover Artwork
 
 Upload your cover image.
 
@@ -331,11 +380,11 @@ Example:
 cover.jpg
 ```
 
-If no cover is provided, the generated player uses a default placeholder.
+If no cover is provided, MyLyricSong uses a default placeholder.
 
 ---
 
-### 5. Add Lyrics
+## 5. Add Lyrics
 
 Paste your synchronized LRC lyrics.
 
@@ -348,15 +397,15 @@ Example:
 [00:14.30]This is the third line
 ```
 
-Make sure the timestamps correspond to the audio.
+Make sure the timestamps match the audio.
 
 ---
 
-### 6. Add Credits
+## 6. Add Credits
 
-Add contributors using the **Credits** section.
+Use the **Credits** section to add contributors.
 
-For example:
+Example:
 
 ```text
 Role: Artist
@@ -369,13 +418,13 @@ Role: Composer
 Name: Alex Smith
 ```
 
-You can add or remove credit entries as needed.
+You can add or remove contributors as needed.
 
 ---
 
-### 7. Configure SEO and Distribution Information
+## 7. Configure Advanced Settings
 
-Optional advanced settings include:
+Optional settings include:
 
 ```text
 Author / Main Creator
@@ -384,55 +433,56 @@ Dominant Theme Color
 Distribution License
 ```
 
-These settings are included in the generated player metadata.
+These values are included in the generated player's metadata.
 
 ---
 
-### 8. Generate Preview
+## 8. Generate Preview
 
 Click:
 
 **Generate Preview**
 
-The player will appear in the Live Output Preview section.
+The generated music player will appear inside the **Live Output Preview** area.
 
 ---
 
-### 9. Export Your Project
+## 9. Export Your Project
 
-You have two export options.
+MyLyricSong provides two export options.
 
-#### Download JSON
+### Download JSON
 
 Click:
 
 **Download JSON**
 
-This exports the current MyLyricSong project data.
+This downloads the current project configuration and data.
 
-#### Download ZIP
+### Download ZIP
 
 Click:
 
 **Download ZIP**
 
-This creates a complete standalone website package containing:
+This generates a standalone website package:
 
 ```text
 index.html
-source/audio.*
-source/cover.*
+source/
+├── audio.*
+└── cover.*
 ```
 
-You can then extract the ZIP and upload the files to a static web host.
+Extract the ZIP and upload the files to a compatible static hosting provider.
 
 ---
 
-## 📋 LRC Format
+# 📋 LRC Format
 
 MyLyricSong uses timestamp-based LRC lyrics.
 
-Basic syntax:
+## Basic Syntax
 
 ```lrc
 [mm:ss.xx]Lyric text
@@ -447,9 +497,9 @@ Example:
 [00:14.80]And continue automatically
 ```
 
-### Timestamp Format
+## Timestamp Format
 
-The timestamp consists of:
+A timestamp follows this format:
 
 ```text
 [minutes:seconds.centiseconds]
@@ -468,131 +518,118 @@ means:
 25.50 seconds
 ```
 
-MyLyricSong automatically sorts parsed lyric lines by their timestamps.
+MyLyricSong automatically sorts parsed lyric lines by timestamp.
+
+### Important
+
+Lyrics synchronization depends on the timestamps you provide.
+
+Incorrect timestamps will result in incorrectly synchronized lyrics.
 
 ---
 
-## 💻 Technology
+# 🧩 Download Without Git Clone
 
-MyLyricSong is designed as a client-side web application.
+MyLyricSong is designed to be easy to obtain without requiring Git.
 
-### Core Technologies
+You **do not need to run**:
 
-* HTML5
-* CSS3
-* Vanilla JavaScript
-* Tailwind CSS
-* Font Awesome
-* JSZip
-* Web Audio / HTML5 Audio
-* FileReader API
-* Blob API
-* Web Share API
-* Schema.org structured data
+```bash
+git clone
+```
 
-The generated player itself does not require a JavaScript framework.
+If you only want to use or distribute a released version, download the project from the repository's **GitHub Releases** section.
 
----
+Typical workflow:
 
-## 🔐 Privacy
+```text
+GitHub Releases
+      │
+      ▼
+Download ZIP
+      │
+      ▼
+Extract files
+      │
+      ▼
+Open MyLyricSong
+      │
+      ▼
+Create your music page
+```
 
-MyLyricSong is designed to process your uploaded files directly in the browser.
+This makes the project accessible to users who do not use Git or GitHub's command-line tools.
 
-Audio and image files are read using browser APIs and converted into data that can be used by the generated player.
+> Releases are intended for convenient distribution of ready-to-use project versions.
 
-The project does not require a dedicated backend server to generate the player.
-
-However, once you export and publish a generated music page, **the files become accessible according to the hosting environment and distribution method you choose**.
-
-Do not upload private or confidential audio, artwork, lyrics, or other materials unless you understand where the resulting files will be stored and published.
-
----
-
-# ⚖️ Usage Rules
-
-MyLyricSong is a tool for creating and packaging music-player pages. It does **not** grant ownership or distribution rights over the music, lyrics, artwork, recordings, or other materials you upload.
-
-By using MyLyricSong, you are responsible for ensuring that you have the necessary rights or permissions for the content you use.
-
-## You MAY
-
-You may use MyLyricSong to:
-
-* Create lyric pages for your own music.
-* Create lyric pages for music you are authorized to distribute.
-* Create personal music-player pages.
-* Generate static HTML music players.
-* Export JSON project data.
-* Export ZIP packages.
-* Host generated pages on compatible static hosting services.
-* Modify generated HTML for your own projects.
-* Customize the generated player for legitimate personal or commercial projects, subject to the rights of the content used.
+If you are developing or modifying the source code, you can instead download the repository source or use Git according to your preferred workflow.
 
 ---
 
-## You MUST
+# 🛠️ Technology
 
-You must:
+MyLyricSong is a client-side web application.
 
-* Respect copyright laws.
-* Have appropriate permission to distribute uploaded music.
-* Have appropriate permission to use uploaded lyrics.
-* Have appropriate permission to use uploaded cover artwork.
-* Respect the selected distribution license.
-* Respect the rights of artists, composers, lyricists, producers, labels, and other copyright holders.
-* Follow the terms of your hosting provider.
-* Provide attribution when required by the selected license.
+## Core Technologies
 
----
+- HTML5
+- CSS3
+- Vanilla JavaScript
+- Tailwind CSS
+- Font Awesome
+- JSZip
+- HTML5 Audio API
+- FileReader API
+- Blob API
+- URL / Object URLs
+- Web Share API
+- Clipboard API
+- `iframe srcdoc`
+- Schema.org structured data
 
-## You MUST NOT
-
-You must not use MyLyricSong to:
-
-* Distribute music without authorization.
-* Redistribute copyrighted songs without permission.
-* Claim someone else's music as your own.
-* Remove required copyright notices or attribution.
-* Use copyrighted lyrics without appropriate authorization.
-* Use artwork without permission.
-* Circumvent licensing restrictions.
-* Create misleading pages that falsely identify the creator of a song.
-* Use MyLyricSong to facilitate copyright infringement.
-* Impersonate Spotify or another music service.
-* Suggest that MyLyricSong is officially affiliated with Spotify.
+The generated music player itself does not require a JavaScript framework.
 
 ---
 
-# 🎵 Spotify Inspiration
+# 🔒 Privacy
 
-MyLyricSong is **inspired by modern music streaming interfaces**, with Spotify being one of the primary visual references.
+MyLyricSong is designed to process uploaded files directly inside your browser.
 
-The project may use familiar concepts found in modern music players, such as:
+Audio and image files are read using browser APIs such as:
 
-* Album artwork
-* Song title
-* Artist information
-* Playback controls
-* Progress bars
-* Lyrics
-* Dark interface
-* Music-focused layouts
+```text
+FileReader
+Blob
+URL.createObjectURL
+```
 
-However:
+The application does not require a dedicated backend server to generate the player.
 
-> **MyLyricSong is an independent project and is not affiliated with, endorsed by, sponsored by, or officially connected to Spotify.**
+### Important
 
-Spotify, its logo, branding, trademarks, and other intellectual property belong to their respective owners.
+When you export a project, your uploaded files can become part of the generated output.
 
-MyLyricSong does not attempt to reproduce Spotify's proprietary software or services.
+For example:
 
-The project uses its own implementation and branding.
+```text
+song.mp3
+cover.jpg
+lyrics
+```
+
+may be included in the generated ZIP package or embedded into generated data.
+
+Once you publish the generated files online, their availability depends on the hosting service and distribution method you choose.
+
+**Do not upload private, confidential, or sensitive content unless you understand how the resulting files will be stored and distributed.**
 
 ---
 
-# 📜 Content & Copyright Responsibility
+# ⚠️ Content & Copyright Responsibility
 
-MyLyricSong provides the **tool**, not the content.
+MyLyricSong is a **creation and packaging tool**.
+
+It does not grant you ownership, copyright, licensing rights, or distribution rights to any content you upload.
 
 For example, if you upload:
 
@@ -602,38 +639,150 @@ cover.jpg
 lyrics.lrc
 ```
 
-you are responsible for ensuring that you are legally allowed to use and distribute all three files.
+you are responsible for ensuring that you have the necessary rights or permissions to use and distribute all three.
 
-The developer of MyLyricSong does not automatically obtain ownership of uploaded content.
+This includes rights relating to:
 
-Similarly, providing a license option such as:
+- Music
+- Audio recordings
+- Lyrics
+- Artwork
+- Artist names
+- Composer credits
+- Producer credits
+- Trademarks
+- Logos
+- Other third-party material
+
+The MyLyricSong developers do not automatically obtain ownership of content you upload.
+
+---
+
+# ⚖️ Usage Rules
+
+MyLyricSong is provided as a tool for creating standalone music and lyric pages.
+
+## ✅ You MAY
+
+You may use MyLyricSong to:
+
+- Create lyric pages for your own music.
+- Create pages for music you are authorized to distribute.
+- Create personal music-player pages.
+- Generate standalone HTML players.
+- Export JSON project data.
+- Export ZIP packages.
+- Host generated pages on compatible hosting services.
+- Modify generated HTML.
+- Customize the generated player.
+- Use the generated player in legitimate personal projects.
+- Use the generated player in legitimate commercial projects, provided that you have the necessary rights to the content.
+
+---
+
+## 📌 You MUST
+
+You must:
+
+- Respect applicable copyright laws.
+- Have permission to distribute uploaded music.
+- Have permission to use uploaded lyrics.
+- Have permission to use uploaded artwork.
+- Respect the license you select for your content.
+- Respect the rights of artists, composers, lyricists, producers, labels, and other rights holders.
+- Follow the terms of your hosting provider.
+- Provide attribution when required by a license.
+
+---
+
+## ❌ You MUST NOT
+
+You must not use MyLyricSong to:
+
+- Distribute music without authorization.
+- Redistribute copyrighted music without permission.
+- Claim someone else's music as your own.
+- Use copyrighted lyrics without appropriate authorization.
+- Use artwork without permission.
+- Remove legally required attribution.
+- Circumvent licensing restrictions.
+- Create misleading copyright or ownership information.
+- Falsely identify yourself as the creator of someone else's work.
+- Facilitate copyright infringement.
+- Impersonate Spotify or another music service.
+- Suggest that MyLyricSong is officially affiliated with Spotify.
+
+---
+
+# 📜 Distribution Licenses
+
+MyLyricSong provides several license choices for the **content you generate**, including options such as:
 
 ```text
+All Rights Reserved
 CC BY 4.0
 CC BY-NC 4.0
 CC BY-ND 4.0
 Public Domain / CC0
 Standard Music License
-All Rights Reserved
 ```
 
-does not automatically make your content compatible with that license.
+Selecting a license in MyLyricSong **does not automatically grant that license to your content**.
 
-**Only select a license that you have the legal authority to apply to your content.**
+For example, selecting:
+
+```text
+CC BY 4.0
+```
+
+does not make copyrighted music or lyrics Creative Commons licensed.
+
+You must have the legal authority to apply the selected license.
+
+> **Only select a license that you are legally authorized to use for the content you are distributing.**
 
 ---
 
-# 🚀 Hosting a Generated Player
+# 🎵 Spotify Inspiration & Trademark Notice
 
-After exporting a ZIP package:
+MyLyricSong is inspired by modern music-streaming interfaces, with Spotify being one of its visual references.
 
-### 1. Extract the ZIP
+The project uses familiar concepts found in modern music players, such as:
+
+- Album artwork
+- Song titles
+- Artist information
+- Playback controls
+- Progress bars
+- Lyrics
+- Dark interfaces
+- Music-focused layouts
+
+However:
+
+> **MyLyricSong is an independent project and is not affiliated with, endorsed by, sponsored by, or officially connected to Spotify.**
+
+Spotify, its logo, trademarks, branding, and related intellectual property belong to their respective owners.
+
+MyLyricSong does not attempt to reproduce Spotify's proprietary software, services, or backend infrastructure.
+
+The project uses its own implementation and branding.
+
+---
+
+# 🌐 Hosting a Generated Player
+
+After downloading a ZIP package, extract it.
+
+## 1. Extract the ZIP
+
+Example:
 
 ```text
 My_Song.zip
 ```
 
-becomes:
+After extraction:
 
 ```text
 My_Song/
@@ -643,29 +792,35 @@ My_Song/
     └── cover.jpg
 ```
 
-### 2. Upload the files
+## 2. Upload the Files
 
-Upload the entire folder to your static hosting provider.
+Upload the entire folder to a compatible static hosting provider.
 
-Examples include:
+Examples:
 
-* GitHub Pages
-* Netlify
-* Cloudflare Pages
-* Vercel
-* Other compatible static hosting services
+- GitHub Pages
+- Netlify
+- Cloudflare Pages
+- Vercel
+- Other static hosting services
 
-### 3. Open the generated page
+## 3. Open the Generated Page
 
 Visit the URL provided by your hosting provider.
 
-The player should load the local audio and cover files from the `source` directory.
+The generated player will load the local audio and artwork from:
+
+```text
+source/
+```
+
+No server-side application is required.
 
 ---
 
 # 📁 Recommended Project Structure
 
-A generated MyLyricSong project can look like:
+A single generated player can use:
 
 ```text
 my-song/
@@ -677,7 +832,7 @@ my-song/
     └── cover.jpg
 ```
 
-For larger projects, you can organize multiple generated players:
+For multiple songs:
 
 ```text
 music/
@@ -697,6 +852,8 @@ music/
 └── index.html
 ```
 
+This structure works well for static websites and personal music collections.
+
 ---
 
 # 🌐 Live Demo
@@ -709,54 +866,96 @@ No installation is required.
 
 ---
 
-# 🧩 Browser Compatibility
+# 💻 Browser Compatibility
 
-MyLyricSong relies on modern browser APIs including:
+MyLyricSong uses modern browser features including:
 
-* HTML5 Audio
-* FileReader
-* Blob
-* URL.createObjectURL
-* iframe `srcdoc`
-* Web Share API
-* Clipboard API
+- HTML5 Audio
+- FileReader API
+- Blob API
+- `URL.createObjectURL()`
+- `iframe srcdoc`
+- Web Share API
+- Clipboard API
 
-For the best experience, use a modern version of:
+Recommended browsers:
 
-* Google Chrome
-* Microsoft Edge
-* Mozilla Firefox
-* Safari
+- Google Chrome
+- Microsoft Edge
+- Mozilla Firefox
+- Safari
 
-Some features, especially native sharing, may vary depending on browser and device support.
+Some features, especially native sharing, may behave differently depending on browser, operating system, and device.
 
 ---
 
-# 🐛 Known Considerations
+# ⚠️ Known Considerations
 
-### Audio Compatibility
+## Audio Compatibility
 
-The browser must support the uploaded audio format.
+The browser must be able to decode the selected audio format.
 
-If a browser cannot decode a particular audio format, playback may not work.
+If a browser does not support a particular format, playback may fail.
 
-### LRC Accuracy
+---
 
-Lyrics synchronization depends on the timestamps provided in the LRC file.
+## LRC Accuracy
 
-Incorrect timestamps will result in incorrectly synchronized lyrics.
+Lyric synchronization depends on the timestamps contained in your LRC data.
 
-### Large Audio Files
+For accurate synchronization, make sure the timestamps match the audio.
 
-Because the application processes uploaded files in the browser, extremely large audio files may require significant browser memory.
+---
+
+## Large Audio Files
+
+MyLyricSong processes files inside the browser.
+
+Very large files can require significant memory and may cause slower processing or browser limitations.
 
 For best results, use reasonably sized audio files.
 
-### Generated File Size
+---
 
-When generating a ZIP package, the original audio and cover files are included in the package.
+## Generated File Size
 
-Large audio files therefore produce larger ZIP files.
+When exporting a ZIP package, the original audio and cover files are included.
+
+Therefore:
+
+```text
+Larger audio
+      ↓
+Larger ZIP
+```
+
+---
+
+## Browser Storage
+
+MyLyricSong does not function as a cloud music-storage service.
+
+Uploaded files are processed for the current generation/export workflow.
+
+If you need permanent storage, store the exported project using your own storage or hosting solution.
+
+---
+
+# 🔐 Security Considerations
+
+MyLyricSong is primarily a client-side application.
+
+Because generated pages can contain user-provided information, you should only use content that you trust and are authorized to distribute.
+
+When publishing generated pages:
+
+- Review generated metadata.
+- Review uploaded artwork.
+- Review lyrics.
+- Review credits.
+- Review the selected license.
+- Ensure that no private information is unintentionally included.
+- Use a trusted hosting provider.
 
 ---
 
@@ -766,16 +965,48 @@ Contributions are welcome.
 
 You can contribute by:
 
-* Reporting bugs
-* Suggesting improvements
-* Improving UI/UX
-* Improving lyric synchronization
-* Improving browser compatibility
-* Adding documentation
-* Improving accessibility
-* Optimizing performance
+- 🐛 Reporting bugs
+- 💡 Suggesting features
+- 🎨 Improving UI/UX
+- 📝 Improving documentation
+- 🎵 Improving lyric synchronization
+- 🌐 Improving browser compatibility
+- ♿ Improving accessibility
+- ⚡ Improving performance
+- 🔧 Submitting code improvements
 
-Before submitting major changes, it is recommended to discuss the proposed change first.
+For major changes, opening an issue first is recommended so the proposed change can be discussed before implementation.
+
+---
+
+# 📥 Distribution
+
+MyLyricSong can be distributed through GitHub Releases.
+
+The project is intentionally designed so users can obtain a ready-to-use release without cloning the Git repository.
+
+Recommended distribution flow:
+
+```text
+Source Code
+     │
+     ▼
+GitHub Repository
+     │
+     ▼
+GitHub Release
+     │
+     ├── MyLyricSong.zip
+     └── Other release assets
+             │
+             ▼
+       User downloads
+             │
+             ▼
+       Extracts & uses
+```
+
+This makes MyLyricSong suitable for users who simply want to download and use the template without learning Git.
 
 ---
 
@@ -786,7 +1017,7 @@ MyLyricSong source code is released under the **MIT License**.
 ```text
 MIT License
 
-Copyright (c) 2026 JasonPw
+Copyright (c) 2026 JASONPW
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -811,60 +1042,100 @@ SOFTWARE.
 
 # ⚠️ Important License Notice
 
-The **MIT License applies to the MyLyricSong software/code**, not automatically to:
+The **MIT License applies to the MyLyricSong source code/software**.
 
-* Music
-* Lyrics
-* Album artwork
-* Audio recordings
-* Artist names
-* Trademarks
-* Logos
-* Third-party libraries
-* Third-party assets
+It does **not automatically apply** to:
 
-Those materials may have their own copyright, licenses, or terms of use.
+- Music
+- Lyrics
+- Audio recordings
+- Album artwork
+- Artist names
+- Trademarks
+- Logos
+- Third-party libraries
+- Third-party assets
+- User-created content
 
-You are responsible for complying with the applicable rights and licenses for any content you add to MyLyricSong.
+These materials may have separate copyrights, licenses, trademarks, or terms of use.
+
+You are responsible for complying with all applicable licenses and rights for content used with MyLyricSong.
+
+---
+
+# 📚 Third-Party Libraries & Services
+
+MyLyricSong uses or references several third-party technologies.
+
+Examples include:
+
+- Tailwind CSS
+- Font Awesome
+- JSZip
+- Google Fonts
+- Web APIs provided by modern browsers
+
+Third-party libraries and services remain subject to their respective licenses and terms.
+
+The MIT License for MyLyricSong does not override or replace third-party licenses.
 
 ---
 
 # 🙏 Credits
 
-**MyLyricSong**
+## MyLyricSong
 
 Created by:
 
 **JASONPW & YCYLSTUDIO**
 
-Inspired by modern music-player experiences and streaming platforms.
+MyLyricSong was created as an independent browser-based music and lyric creation tool.
 
-Special thanks to the open-source community and the developers of the web technologies and libraries that make this project possible.
+Special thanks to:
+
+- The open-source community
+- Web platform developers
+- Browser developers
+- Library maintainers
+- Everyone who contributes feedback and improvements
 
 ---
 
 # 📌 Disclaimer
 
-MyLyricSong is an independent project.
+MyLyricSong is an independent open-source project.
 
-It is **not affiliated with Spotify** and does not represent an official Spotify product.
+It is **not affiliated with, endorsed by, sponsored by, or officially connected to Spotify**.
 
 Spotify and related trademarks are property of their respective owners.
 
-MyLyricSong is provided as a tool for creating standalone music and lyric pages. Users are solely responsible for the legality of the content they upload, generate, publish, and distribute.
+MyLyricSong is provided as a tool for creating standalone music and lyric pages.
+
+Users are solely responsible for the legality of the content they upload, generate, publish, and distribute.
+
+The developers of MyLyricSong are not responsible for unauthorized use, copyright infringement, licensing violations, or illegal distribution of content created using the software.
 
 ---
 
-## ⭐ Support the Project
+# ⭐ Support the Project
 
-If you find MyLyricSong useful:
+If you find MyLyricSong useful, consider:
 
-* ⭐ Star the repository
-* 🐛 Report bugs
-* 💡 Suggest features
-* 🔧 Contribute improvements
-* 📢 Share the project with other developers
+- ⭐ Starring the repository
+- 🐛 Reporting bugs
+- 💡 Suggesting features
+- 🔧 Contributing improvements
+- 📝 Improving documentation
+- 📢 Sharing the project with other developers
+
+Every contribution helps improve the project.
 
 ---
 
-**MyLyricSong — Create. Sync. Play. Share.**
+# 🎵 MyLyricSong
+
+**Create. Sync. Play. Share.**
+
+A lightweight, browser-based music and lyric page generator.
+
+**Free to use. Open source. MIT licensed.**
